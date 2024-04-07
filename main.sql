@@ -4,12 +4,6 @@ CREATE TABLE user_connection (
     following_ID integer REFERENCES user_profile(id),
     asatus varchar
 );
---JUNCTION TABLE
-CREATE TABLE user_profile_connection (
-    id serial  PRIMARY KEY,
-    user_profile_ID integer NOT NULL REFERENCES user_profile(id) ON DELETE CASCADE,
-    connection_id  integer NOT NULL REFERENCES user_connection(id)
-);
 
 CREATE TABLE user_posts (
     id serial PRIMARY KEY,
@@ -72,7 +66,6 @@ CREATE TABLE message_thread (
 --JUNCTION TABLE 
 CREATE TABLE message_participants (
     id serial PRIMARY KEY,
-    participant_id integer REFERENCES user_profile(id),
     message_thread_id integer REFERENCES message_thread(id),
     user_profile_id integer REFERENCES user_profile(id)
 ); 
