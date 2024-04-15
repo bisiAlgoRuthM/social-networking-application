@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Feed - MySocialNetwork</title>
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}">
+</head>
+<body>
+    <header>
+        <h1>MySocialNetwork</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="new-post">
+            <h2>Create a New Post</h2>
+            <form action="#" method="post">
+                <textarea name="content" placeholder="What's on your mind?" rows="5"></textarea>
+                <input type="file" name="image" accept="image/*">
+                <button type="submit">Post</button>
+            </form>
+        </section>
+
+        <section class="feed">
+            <h2>Your Feed</h2>
+            {% for post in posts %}
+                <article class="post">
+                    <header>
+                        <img src="{{ post.user.profile_picture.url }}" alt="Profile picture of {{ post.user.username }}">
+                        <div>
+                            <h3>{{ post.user.username }}</h3>
+                            <p>{{ post.created_at | timesince }}</p>
+                        </div>
+                    </header>
+                    <p>{{ post.content }}</p>
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="Post image">
+                    {% endif %}
+                    <footer>
+                        <a href="#">Like</a>
+                        <a href="#">Comment</a>
+                        <a href="#">Share</a>
+                    </footer>
+                </article>
+            {% endfor %}
+        </section>
+    </main>
+
+</body>
+</html>

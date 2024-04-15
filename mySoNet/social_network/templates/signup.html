@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function handleSignupError(errorMessage) {
+            // Create a pop-up element with the error message and a close button
+            var popup = $('<div class="error-popup">' +
+                '<p>' + errorMessage + '</p>' +
+                '<button class="close-btn">Close</button>' +
+                '</div>');
+
+            // Add styling to the pop-up (optional)
+            popup.css({
+                'position': 'fixed',
+                'top': '50%',
+                'left': '50%',
+                'transform': 'translate(-50%, -50%)',
+                'background-color': 'lightcoral',
+                'padding': '10px',
+                'border-radius': '5px'
+            });
+
+            // Append the pop-up to the body
+            $('body').append(popup);
+
+            // Attach a click event listener to the close button
+            $('.close-btn').click(function() {
+                popup.remove();  // Remove the pop-up element on close button click
+            });
+        }
+    </script>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h2>Sign Up</h2>
+        <form action="#" method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <script>
+            $('form').submit(function(event) {
+                // Your form validation logic here (optional)
+    
+                // If validation fails, prevent form submission and display error message
+                if (/* validation fails */) {
+                    event.preventDefault();
+                    handleSignupError('Username must be at least 5 characters long.');
+                    return;
+                }
+    
+                // If form validation passes, allow form submission
+            });
+        </script>
+        <p>Already have an account? <a href="login.html">Log In</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7e6f0;
+}
+
+header {
+    background-color: #e0d0e0;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+h1 {
+    font-size: 24px;
+    color: #6930c3;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #6930c3;
+}
+
+main {
+    padding: 20px;
+}
+
+section {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.new-post form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.new-post textarea {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    resize

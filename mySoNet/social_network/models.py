@@ -6,33 +6,80 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-from django.contrib.auth.models import AbstractUser 
+from django.contrib.auth.models import BaseUserManager, AbstractUser, Group, Permission 
+
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.hashers import make_password
+from django.core.validators import EmailValidator
+from django.db import models
+from django.utils import timezone
+
+class UserManager(BaseUserManager):
+    """
+    Custom user manager to handle user creation with email and password.
+    """
+
+    def create_user(self, username, email, password, **extra_fields):
+        """
+        Creates and saves a User with the given email, password and other fields.
+
+        Args:
+            username (str): The username for the user.
+            email (str): The email address of the user.
+            password (str): The password for the user.
+            extra_fields (dict, optional): A dictionary of other fields that should be saved on the user.
+
+        Returns:
+            User: The created user object.
+        """
+
+        if not username:
+            raise ValueError('The username is required')
+
+        if not email:
+            raise ValueError('The email address is required')
+
+        email = self.normalize_email(email)
+        user = self.model(username=username, email=email, **extra_fields)
+        user.password = make_password(password)
+        user.save(using=self._db)
+        return user
 
 class User(AbstractUser):
     ''' User information'''
     username = models.CharField(unique=True, max_length=225)
-    email = models.CharField(max_length=50, blank=True, null=True)
-    password_hash = models.CharField(max_length=24)
+    email = models.CharField(max_length=50, unique=True, validators=[EmailValidator()])  # Ensures valid email format
+    password = models.CharField(max_length=24, default="")  # This field is already hashed by AbstractUser
     bio = models.CharField(blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True)
-    date_joined = models.DateTimeField()
-
+    date_joined = models.DateTimeField(default=timezone.now)  # Auto-filled on creation
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='social_network_users',  # Different related_name here
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='social_network_users',  # Different related_name here
+        blank=True
+    )
     class Meta:
-        db_table = 'user_profile'
+        db_table = 'user'
+
 
 class Attachment(models.Model):
     ''' Stores information about uploaded files'''
     filename = models.CharField(max_length=225)
     content_type = models.CharField(max_length=255)
     size = models.IntegerField()
-    attachment_file = models.FileField(upload_to='/attachments/')
+    attachment_file = models.FileField(upload_to='attachments/')
 
     class Meta:
         db_table = 'attachment'
 
 class Post(models.Model):
     ''' Represents a user's post'''
-    user_profile = models.ForeignKey('UserProfile', on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255, blank=True)
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -40,6 +87,9 @@ class Post(models.Model):
 
     class Meta:
         db_table = 'user_posts'
+    
+    def __str__(self):
+        return f"{self.author.username} - {self.body[:20]}"
 
 
 class PostAttachment(models.Model):
@@ -82,15 +132,6 @@ class Comment(models.Model):
     class Meta:
         db_table = 'user_comments'
 
-
-class UserConnection(models.Model):
-    '''Tracks user following relationships'''
-    follower = models.ForeignKey(User, on_delete=models.CASCADE)
-    following = models.ForeignKey(User,on_delete=models.CASCADE))
-    status = models.CharField(blank=True, null=True)
-
-    class Meta:
-        db_table = 'user_connection'
 
 
 class UserEngagement(models.Model):
